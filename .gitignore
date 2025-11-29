@@ -1,0 +1,70 @@
+# ============================
+# Global
+# ============================
+.DS_Store
+logs/
+*.log
+*.json
+*.tmp
+.env
+.env.*
+!.env.example
+
+# ============================
+# Spring Boot (backend)
+# ============================
+backend/.gradle/
+backend/build/
+backend/bin/
+backend/out/
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+backend/src/main/resources/application-dev.yml
+backend/src/test/resources/application-dev.yml
+
+# keep gradle wrapper
+!backend/gradle/wrapper/gradle-wrapper.jar
+
+# ignore everything else
+!backend/**/src/main/**/build/
+!backend/**/src/test/**/build/
+!backend/**/src/main/**/bin/
+!backend/**/src/test/**/bin/
+!backend/**/src/main/**/out/
+!backend/**/src/test/**/out/
+
+# credentials
+backend/quizsushi-*.json
+
+# ============================
+# IntelliJ / VSCode
+# ============================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# ============================
+# Next.js (frontend)
+# ============================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+frontend/.pnpm-debug.log*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# env
+frontend/.env*
+backend/.env*
