@@ -1,0 +1,64 @@
+name: Deploy Frontend to Server
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed] 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate .env.production for Next.js build
+        run: echo "${{ secrets.ENV_PRODUCTION_CONTENT }}" > .env.production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            dlaudfuf33/quizsushi-fe:latest
+            dlaudfuf33/quizsushi-fe:${{ github.sha }}
+
+      - name: SSH deploy frontend container
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: 1202
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/leenux/quizsushi/fe
+            echo "IMAGE_TAG=${{ github.sha }}" > .env.prod
+            echo "📁 서버 디렉토리 이동"
+
+            echo "🛑 기존 컨테이너 정리"
+            docker compose down
+
+            echo "🚀 새 버전으로 컨테이너 실행"
+            IMAGE_TAG=${{ github.sha }} docker compose up -d
+
+            echo "📝 배포 버전 기록"
+            bash record_version.sh ${{ github.sha }}
+
+            echo "✅ 배포 완료"
